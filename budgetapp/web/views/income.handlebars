@@ -1,0 +1,13 @@
+<div class="container">
+  <h1>Income</h1>
+  <ul>
+    {{#each income}}
+    <li>
+      <strong>Amount:</strong> KES {{this.amount}} <br>
+      <strong>Category:</strong> {{this.category}} <br>
+      <strong>Date:</strong> {{this.timestamp}}
+    </li>
+    {{/each}}
+  </ul>
+  <p><a href="/">Go Back Home</a></p>
+</div>

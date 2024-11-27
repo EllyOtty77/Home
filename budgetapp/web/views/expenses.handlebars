@@ -1,0 +1,16 @@
+<div class="container">
+  <h1>Expenses</h1>
+  <ul>
+    {{#each expenses}}
+    <li>
+      <strong>Description:</strong> {{this.description}} <br>
+      <strong>Amount:</strong> KES {{this.amount}} <br>
+      <strong>Category:</strong> {{this.category}} <br>
+      <strong>Larger Category:</strong> {{this.larger_category}} <br>
+      <strong>Date:</strong> {{this.timestamp}} <br>
+      <strong>Feeling:</strong> {{this.feeling}}
+    </li>
+    {{/each}}
+  </ul>
+  <p><a href="/">Go Back Home</a></p>
+</div>

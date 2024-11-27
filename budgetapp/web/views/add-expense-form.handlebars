@@ -1,0 +1,27 @@
+<div class="container">
+  <h1>Add New Expense</h1>
+  <form action="/add-expense" method="POST">
+    <label for="description">Description:</label>
+    <input type="text" id="description" name="description" required>
+    
+    <label for="amount">Amount:</label>
+    <input type="number" id="amount" name="amount" required>
+    
+    <label for="category">Category:</label>
+    <input type="text" id="category" name="category" required>
+    
+    <label for="larger_category">Larger Category:</label>
+    <select id="larger_category" name="larger_category" required>
+      <option value="Essentials">Essentials</option>
+      <option value="Personal">Personal</option>
+      <option value="Leisure">Leisure</option>
+      <option value="Investment">Investment</option>
+    </select>
+    
+    <label for="feeling">Feeling (1-5):</label>
+    <input type="number" id="feeling" name="feeling" min="1" max="5" required>
+    
+    <button type="submit">Add Expense</button>
+  </form>
+  <p><a href="/">Go Back Home</a></p>
+</div>
