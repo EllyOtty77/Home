@@ -1,0 +1,12 @@
+# Ignore env directory
+homenv/
+
+# Ignore Python bytecode files
+__pycache__/
+*.py[cod]
+
+# Ignore VS Code settings
+.vscode/
+
+# Ignore node modules
+node_modules/
