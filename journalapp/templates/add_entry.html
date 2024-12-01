@@ -5,19 +5,76 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Journal Entry</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function setStaticBackground() {
+            document.body.style.backgroundImage = `url('/static/bg.jpg')`;
+        }
+        window.onload = setStaticBackground;
+
+        const moods = {
+            happiness: ['Joyful', 'Excited', 'Content', 'Proud', 'Amused'],
+            sadness: ['Down', 'Disappointed', 'Lonely', 'Grieving', 'Heartbroken'],
+            fear: ['Anxious', 'Scared', 'Nervous', 'Apprehensive', 'Terrified'],
+            anger: ['Frustrated', 'Annoyed', 'Enraged', 'Bitter', 'Irritated'],
+            surprise: ['Shocked', 'Astonished', 'Curious', 'Confused', 'Amazed'],
+            disgust: ['Repulsed', 'Uncomfortable', 'Nauseated', 'Offended', 'Displeased'],
+            love: ['Affectionate', 'Passionate', 'Warm', 'Tender', 'Caring']
+        };
+
+        function updateDetailedMood() {
+            const majorEmotion = document.getElementById('major-emotion').value;
+            const detailedMoodSelect = document.getElementById('detailed-mood');
+            detailedMoodSelect.innerHTML = '';
+
+            if (moods[majorEmotion]) {
+                moods[majorEmotion].forEach(mood => {
+                    const option = document.createElement('option');
+                    option.value = mood;
+                    option.textContent = mood;
+                    detailedMoodSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = '--Select Detailed Mood--';
+                detailedMoodSelect.appendChild(option);
+            }
+        }
+    </script>
 </head>
 <body>
     <div class="container">
-        <h1>Add New Journal Entry</h1>
-        <form action="{{ url_for('add_entry') }}" method="POST">
-            <label for="thoughts">What's on your mind today?</label>
-            <textarea name="thoughts" id="thoughts" required></textarea><br><br>
-            <label for="mood">Rate your mood (1-10 or Happy/Sad/Neutral)</label>
-            <input type="text" name="mood" id="mood" required><br><br>
-            <button type="submit">Save Entry</button>
+        <h1>Add New Journal Entry or Dream Log</h1>
+        <form action="{{ url_for('add_entry') }}" method="POST" class="entry-form">
+            <label for="entry-type" class="form-label">Entry Type:</label>
+            <select id="entry-type" name="entry-type" class="form-dropdown" required>
+                <option value="journal">Journal Entry</option>
+                <option value="dream">Dream Log</option>
+            </select>
+
+            <label for="thoughts" class="form-label">What's on your mind today?</label>
+            <textarea name="thoughts" id="thoughts" class="form-textarea" required></textarea>
+
+            <label for="major-emotion" class="form-label">Select your emotion:</label>
+            <select id="major-emotion" name="major-emotion" class="form-dropdown" onchange="updateDetailedMood()" required>
+                <option value="">--Select Emotion--</option>
+                <option value="happiness">Happiness</option>
+                <option value="sadness">Sadness</option>
+                <option value="fear">Fear</option>
+                <option value="anger">Anger</option>
+                <option value="surprise">Surprise</option>
+                <option value="disgust">Disgust</option>
+                <option value="love">Love</option>
+            </select>
+
+            <label for="detailed-mood" class="form-label">Detailed mood:</label>
+            <select id="detailed-mood" name="detailed-mood" class="form-dropdown" required>
+                <option value="">--Select Detailed Mood--</option>
+            </select>
+
+            <button type="submit" class="button form-button">Save Entry</button>
         </form>
-	  </br>
-        <a href="{{ url_for('home') }}">Back to Home</a>
+        <a href="{{ url_for('home') }}" class="button back-button">Back to Home</a>
     </div>
 </body>
 </html>

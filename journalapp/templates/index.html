@@ -5,13 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to your Journal</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function setRandomBackground(images) {
+            const randomImage = images[Math.floor(Math.random() * images.length)];
+            document.body.style.backgroundImage = `url('/static/${randomImage}')`;
+        }
+        window.onload = () => setRandomBackground({{ images | tojson }});
+    </script>
 </head>
 <body>
     <div class="container">
         <h1>Welcome to your Journal</h1>
+        <div class="quote">
+            <p>"{{ quote.text }}"</p>
+        </div>
         <div class="nav-links">
-            <a href="{{ url_for('add_entry') }}">Add Entry</a>
-            <a href="{{ url_for('view_entries') }}">View Entries</a>
+            <a href="{{ url_for('add_entry') }}" class="button">Add Entry</a>
+            <a href="{{ url_for('view_entries') }}" class="button">View Entries</a>
+            <a href="{{ url_for('view_dreams') }}" class="button">View Dreams</a>
         </div>
     </div>
 </body>
