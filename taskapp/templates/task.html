@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Details</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    {% if task %}
+        <h1>{{ task[1] }}</h1>
+        <p>Category: {{ task[2] }}</p>
+        <p>Duration: {{ task[3] }} minutes</p>
+        <p>Priority: {{ task[4] }}</p>
+        <p>Points: {{ task[5] }}</p>
+    {% else %}
+        <p>No tasks available.</p>
+    {% endif %}
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>

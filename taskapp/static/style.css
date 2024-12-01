@@ -1,0 +1,78 @@
+/* style.css */
+
+body {
+    font-family: Arial, sans-serif;
+    background: url('{{ url_for('static', filename='background.jpg') }}') no-repeat center center fixed;
+    background-size: cover;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+header {
+    background-color: rgba(255, 255, 255, 0.8);
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+section {
+    background-color: rgba(255, 255, 255, 0.8);
+    margin: 20px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 80%;
+    max-width: 400px;
+}
+
+.task-form form {
+    display: flex;
+    flex-direction: column;
+}
+
+.task-form input,
+.task-form select,
+.task-form button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    background-color: #4caf50;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.nav-link {
+    display: block;
+    background-color: #2e8b57;
+    color: white;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 4px;
+    text-decoration: none;
+}
+
+.nav-link:hover {
+    background-color: #267a46;
+}
+
+#timer {
+    font-size: 2em;
+    margin: 20px 0;
+}

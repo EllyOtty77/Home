@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Our Tasks</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1 class="view-tasks-header">Our Tasks</h1>
+    </header>
+
+    <div class="content">
+        <section>
+            <div class="sort-container">
+                <h2 onclick="toggleSection('remainingTasks')" class="collapsible collapsible-appealing">Remaining Tasks</h2>
+                <div>
+                    <label for="sortRemaining">Sort by:</label>
+                    <select id="sortRemaining" onchange="sortTasks('remainingTasks', this.value)">
+                        <option value="priority">Priority</option>
+                        <option value="name">Name</option>
+                        <option value="category">Category</option>
+                    </select>
+                </div>
+            </div>
+            <div id="remainingTasks" class="task-container">
+                {% for task in remaining_tasks %}
+                    <div class="card task-card" data-name="{{ task[1] }}" data-category="{{ task[2] }}" data-priority="{{ task[4] }}">
+                        <h3>{{ task[1] }}</h3>
+                        <p>Category: {{ task[2] }}</p>
+                        <p>Duration: {{ task[3] }} minutes</p>
+                        <p>Priority: {{ task[4] }}</p>
+                        <p>Points: {{ task[5] }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section>
+            <div class="sort-container">
+                <h2 onclick="toggleSection('completedTasks')" class="collapsible collapsible-appealing">Completed Tasks</h2>
+                <div>
+                    <label for="sortCompleted">Sort by:</label>
+                    <select id="sortCompleted" onchange="sortTasks('completedTasks', this.value)">
+                        <option value="priority">Priority</option>
+                        <option value="name">Name</option>
+                        <option value="category">Category</option>
+                    </select>
+                </div>
+            </div>
+            <div id="completedTasks" class="task-container">
+                {% for task in completed_tasks %}
+                    <div class="card task-card completed" data-name="{{ task[0] }}" data-category="{{ task[1] }}" data-priority="{{ task[4] }}">
+                        <h3>{{ task[0] }}</h3>
+                        <p>Category: {{ task[1] }}</p>
+                        <p>Duration: {{ task[2] }} minutes</p>
+                        <p>Completed at: {{ task[3] }}</p>
+                        <p>Points: {{ task[4] }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <a href="{{ url_for('index') }}" class="back-link">Back to Home</a>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('{{ url_for('static', filename='background.jpg') }}') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header {
+            padding: 20px;
+        }
+
+        .view-tasks-header {
+            color: #ff7043;
+            font-size: 3em;
+            margin: 0;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        section {
+            background-color: rgba(255, 255, 255, 0.9);
+            margin: 20px 0;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .sort-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #ddd;
+        }
+
+        .sort-container div {
+            display: flex;
+            align-items: center;
+        }
+
+        .sort-container label {
+            margin-right: 5px;
+        }
+
+        .sort-container select {
+            padding: 5px 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            background-color: #fff;
+            color: #333;
+        }
+
+        .task-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            overflow: hidden;
+            transition: max-height 0.2s ease-out;
+        }
+
+        .card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            flex: 1;
+            min-width: 250px;
+            max-width: 300px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .card p {
+            color: #666;
+        }
+
+        /* Add colors to the task cards */
+        .card[data-priority="high"] {
+            background-color: #ffcdd2;
+        }
+
+        .card[data-priority="medium"] {
+            background-color: #fff9c4;
+        }
+
+        .card[data-priority="low"] {
+            background-color: #dcedc8;
+        }
+
+        .card.completed {
+            background-color: #e0f7fa;
+        }
+
+        .collapsible {
+            cursor: pointer;
+            background-color: #ff7043;
+            color: white;
+            padding: 10px;
+            margin: 5px auto;
+            border-radius: 4px;
+            text-align: center;
+            width: auto;
+            min-width: 150px;
+            transition: background-color 0.3s ease;
+        }
+
+        .collapsible:hover {
+            background-color: #ff5722;
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #ff7043;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #ff5722;
+        }
+    </style>
+
+    <script>
+        function toggleSection(id) {
+            var section = document.getElementById(id);
+            if (section.style.maxHeight) {
+                section.style.maxHeight = null;
+            } else {
+                section.style.maxHeight = section.scrollHeight + "px";
+            }
+        }
+
+        function sortTasks(sectionId, sortBy) {
+            var container = document.getElementById(sectionId);
+            var tasks = Array.from(container.getElementsByClassName('task-card'));
+
+            tasks.sort(function(a, b) {
+                if (sortBy === 'name') {
+                    return a.dataset.name.localeCompare(b.dataset.name);
+                } else if (sortBy === 'category') {
+                    return a.dataset.category.localeCompare(b.dataset.category);
+                } else {
+                    return a.dataset.priority.localeCompare(b.dataset.priority);
+                }
+            });
+
+            tasks.forEach(function(task) {
+                container.appendChild(task);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            sortTasks('remainingTasks', 'priority');
+            sortTasks('completedTasks', 'priority');
+        });
+    </script>
+</body>
+</html>

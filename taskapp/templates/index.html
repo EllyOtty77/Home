@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task Manager</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <h1 class="main-header">Task Manager</h1>
+    </header>
+
+    <div class="content">
+        <section class="task-form">
+            <h2>Add a Task</h2>
+            <form action="{{ url_for('add_task') }}" method="post">
+                <input type="text" name="name" placeholder="Task name" required>
+                <select name="category" required>
+                    <option value="" disabled selected>Select category</option>
+                    <option value="hobby">Hobby</option>
+                    <option value="career">Career</option>
+                    <option value="relaxation">Relaxation</option>
+                    <option value="art">Art</option>
+                    <option value="project">Project</option>
+                </select>
+                <select name="priority" required>
+                    <option value="" disabled selected>Select priority</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <button type="submit" class="btn-primary">Add Task</button>
+            </form>
+        </section>
+
+        <section class="navigation">
+            <h2>Navigate</h2>
+            <a href="{{ url_for('pick_task') }}" class="nav-link btn-primary">Pick a Random Task</a>
+            <a href="{{ url_for('view_tasks') }}" class="nav-link btn-primary">View Tasks</a>
+            <a href="{{ url_for('progress') }}" class="nav-link btn-primary">View Progress</a>
+        </section>
+
+        <section class="pomodoro">
+            <h2>Pomodoro Timer</h2>
+            <div id="timer" class="timer-display">25:00</div>
+            <button onclick="startPomodoro()" class="btn-primary">Start Pomodoro</button>
+        </section>
+    </div>
+
+    <script>
+        function startPomodoro() {
+            let workTime = 25 * 60;
+            let breakTime = 5 * 60;
+            let isWorkTime = true;
+            let timer = setInterval(function() {
+                let minutes = Math.floor(workTime / 60);
+                let seconds = workTime % 60;
+                document.getElementById('timer').innerHTML = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (--workTime < 0) {
+                    if (isWorkTime) {
+                        isWorkTime = false;
+                        workTime = breakTime;
+                        notify("Time for a break!");
+                    } else {
+                        isWorkTime = true;
+                        workTime = 25 * 60;
+                        notify("Back to work!");
+                    }
+                }
+            }, 1000);
+        }
+
+        function notify(message) {
+            if (Notification.permission === "granted") {
+                new Notification(message);
+            } else if (Notification.permission !== "denied") {
+                Notification.requestPermission().then(permission => {
+                    if (permission === "granted") {
+                        new Notification(message);
+                    }
+                });
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: url('{{ url_for('static', filename='background.jpg') }}') no-repeat center center fixed;
+            background-size: cover;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        header {
+            padding: 20px;
+        }
+
+        .main-header {
+            color: #ff7043;
+            font-size: 3em;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 800px;
+            margin: 20px;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        section {
+            margin: 20px 0;
+            width: 100%;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+
+        .btn-primary {
+            background-color: #ff7043;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #ff5722;
+        }
+
+        .nav-link {
+            display: block;
+            margin: 10px 0;
+            text-decoration: none;
+        }
+
+        .timer-display {
+            font-size: 2em;
+            margin: 20px 0;
+        }
+    </style>
+</body>
+</html>
