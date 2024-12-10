@@ -38,49 +38,8 @@
             <a href="{{ url_for('view_tasks') }}" class="nav-link btn-primary">View Tasks</a>
             <a href="{{ url_for('progress') }}" class="nav-link btn-primary">View Progress</a>
         </section>
-
-        <section class="pomodoro">
-            <h2>Pomodoro Timer</h2>
-            <div id="timer" class="timer-display">25:00</div>
-            <button onclick="startPomodoro()" class="btn-primary">Start Pomodoro</button>
-        </section>
     </div>
 
-    <script>
-        function startPomodoro() {
-            let workTime = 25 * 60;
-            let breakTime = 5 * 60;
-            let isWorkTime = true;
-            let timer = setInterval(function() {
-                let minutes = Math.floor(workTime / 60);
-                let seconds = workTime % 60;
-                document.getElementById('timer').innerHTML = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                if (--workTime < 0) {
-                    if (isWorkTime) {
-                        isWorkTime = false;
-                        workTime = breakTime;
-                        notify("Time for a break!");
-                    } else {
-                        isWorkTime = true;
-                        workTime = 25 * 60;
-                        notify("Back to work!");
-                    }
-                }
-            }, 1000);
-        }
-
-        function notify(message) {
-            if (Notification.permission === "granted") {
-                new Notification(message);
-            } else if (Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        new Notification(message);
-                    }
-                });
-            }
-        }
-    </script>
 
     <style>
         body {
@@ -132,7 +91,7 @@
         }
 
         .btn-primary {
-            background-color: #ff7043;
+            background-color: green;
             color: white;
             border: none;
             cursor: pointer;
@@ -140,7 +99,7 @@
         }
 
         .btn-primary:hover {
-            background-color: #ff5722;
+            background-color: turqoise;
         }
 
         .nav-link {
@@ -149,10 +108,6 @@
             text-decoration: none;
         }
 
-        .timer-display {
-            font-size: 2em;
-            margin: 20px 0;
-        }
     </style>
 </body>
 </html>

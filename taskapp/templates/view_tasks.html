@@ -10,6 +10,8 @@
     </header>
 
     <div class="content">
+        <button onclick="location.href='{{ url_for('init_tasks') }}'" class="btn-primary">Initialize Default Tasks</button>
+
         <section>
             <div class="sort-container">
                 <h2 onclick="toggleSection('remainingTasks')" class="collapsible collapsible-appealing">Remaining Tasks</h2>
@@ -24,7 +26,7 @@
             </div>
             <div id="remainingTasks" class="task-container">
                 {% for task in remaining_tasks %}
-                    <div class="card task-card" data-name="{{ task[1] }}" data-category="{{ task[2] }}" data-priority="{{ task[4] }}">
+                    <div class="card task-card" data-name="{{ task[1] }}" data-category="{{ task[2] }}" data-priority="{{ task[3] }}">
                         <h3>{{ task[1] }}</h3>
                         <p>Category: {{ task[2] }}</p>
                         <p>Duration: {{ task[3] }} minutes</p>
@@ -193,6 +195,21 @@
         }
 
         .collapsible:hover {
+            background-color: #ff5722;
+        }
+
+        .btn-primary {
+            background-color: #ff7043;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
             background-color: #ff5722;
         }
 

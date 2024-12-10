@@ -6,6 +6,30 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
+# Define default tasks
+DEFAULT_TASKS = [
+    {"name": "Nature Walk", "category": "relaxation", "priority": "low"},
+    {"name": "Watch a Show", "category": "relaxation", "priority": "low"},
+    {"name": "Listen to Music", "category": "relaxation", "priority": "low"},
+    {"name": "Play a Game", "category": "relaxation", "priority": "low"},
+    {"name": "Read a Book", "category": "relaxation", "priority": "low"},
+    {"name": "Explore a Complex Idea", "category": "relaxation", "priority": "low"},
+]
+
+def initialize_default_tasks():
+    conn = sqlite3.connect('tasks.db')
+    cursor = conn.cursor()
+    # Clear existing tasks
+    cursor.execute('DELETE FROM tasks')
+    # Add default tasks
+    for task in DEFAULT_TASKS:
+        duration = random.choice([20, 30, 40, 60])
+        points = calculate_points(task['priority'])
+        cursor.execute('INSERT INTO tasks (name, category, duration, priority, points) VALUES (?, ?, ?, ?, ?)',
+                       (task['name'], task['category'], duration, task['priority'], points))
+    conn.commit()
+    conn.close()
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -59,6 +83,11 @@ def view_tasks():
     completed_tasks = cursor.fetchall()
     conn.close()
     return render_template('view_tasks.html', remaining_tasks=remaining_tasks, completed_tasks=completed_tasks)
+
+@app.route('/init_tasks')
+def init_tasks():
+    initialize_default_tasks()
+    return redirect(url_for('view_tasks'))
 
 @app.route('/progress')
 def progress():
