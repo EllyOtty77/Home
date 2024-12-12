@@ -7,7 +7,7 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
 # Define default tasks
-DEFAULT_TASKS = [
+def_tasks = [
     {"name": "Nature Walk", "category": "relaxation", "priority": "low"},
     {"name": "Watch a Show", "category": "relaxation", "priority": "low"},
     {"name": "Listen to Music", "category": "relaxation", "priority": "low"},
@@ -16,14 +16,38 @@ DEFAULT_TASKS = [
     {"name": "Explore a Complex Idea", "category": "relaxation", "priority": "low"},
 ]
 
+Art = {"Music":['Design', 'theory', 'structure'],
+       "Writing": ['descriptive', 'storytelling', 'poetry', 'expository'],
+       "Design":['color', 'thinking', 'form'],
+       "Art": ['meaning', 'inspiration', 'technique']}
+
+def art_pick():
+    art_tasks = []
+    for key in Art:
+        minis = Art[key]
+        random.shuffle(minis)
+        mini = random.choice(minis)
+        task_name = f"{key}: {mini}"
+        task_dict= {}
+        task_dict["name"] = task_name
+        task_dict["category"] = 'art'
+        task_dict["priority"] = 'medium'
+        
+        art_tasks.append(task_dict)
+    return art_tasks
+
+    
 def initialize_default_tasks():
+    default_tasks = []
+    default_tasks.extend(def_tasks)
+    default_tasks.extend(art_pick())
     conn = sqlite3.connect('tasks.db')
     cursor = conn.cursor()
     # Clear existing tasks
     cursor.execute('DELETE FROM tasks')
     # Add default tasks
-    for task in DEFAULT_TASKS:
-        duration = random.choice([20, 30, 40, 60])
+    for task in default_tasks:
+        duration = random.choice([15, 25, 30, 40, 60])
         points = calculate_points(task['priority'])
         cursor.execute('INSERT INTO tasks (name, category, duration, priority, points) VALUES (?, ?, ?, ?, ?)',
                        (task['name'], task['category'], duration, task['priority'], points))
@@ -42,7 +66,7 @@ def add_task():
     points = calculate_points(priority)
     conn = sqlite3.connect('tasks.db')
     cursor = conn.cursor()
-    duration = random.choice([20, 30, 40, 60, 100] if category == 'project' else [20, 30, 40, 60])
+    duration = random.choice([40, 60, 100] if category == 'project' else [20, 30, 40, 60])
     cursor.execute('INSERT INTO tasks (name, category, duration, priority, points) VALUES (?, ?, ?, ?, ?)',
                    (name, category, duration, priority, points))
     conn.commit()
@@ -60,14 +84,17 @@ def calculate_points(priority):
 def pick_task():
     conn = sqlite3.connect('tasks.db')
     cursor = conn.cursor()
-    cursor.execute('SELECT * FROM tasks ORDER BY priority DESC, RANDOM() LIMIT 1')
-    task = cursor.fetchone()
-    if task:
-        completed_at = datetime.now() + timedelta(minutes=task[3])
-        cursor.execute('INSERT INTO completed_tasks (task_id, task_name, category, duration, completed_at, points) VALUES (?, ?, ?, ?, ?, ?)',
-                       (task[0], task[1], task[2], task[3], completed_at, task[5]))
-        cursor.execute('DELETE FROM tasks WHERE id = ?', (task[0],))
-        conn.commit()
+    cursor.execute('SELECT * FROM tasks')
+    tasks = cursor.fetchall()
+    if len(tasks) > 0:
+        random.shuffle(tasks)
+        task = random.choice(tasks)
+        if task:
+            completed_at = datetime.now() + timedelta(minutes=task[3])
+            cursor.execute('INSERT INTO completed_tasks (task_id, task_name, category, duration, completed_at, points) VALUES (?, ?, ?, ?, ?, ?)',
+                           (task[0], task[1], task[2], task[3], completed_at, task[5]))
+            cursor.execute('DELETE FROM tasks WHERE id = ?', (task[0],))
+            conn.commit()
     conn.close()
     return render_template('task.html', task=task)
 
