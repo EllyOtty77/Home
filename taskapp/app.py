@@ -25,8 +25,8 @@ CAREER_TASKS = {
     "Theory": ['HTTP', 'Statistics'],
     "Language": ['Python', 'Javascript', 'HTML'],
     "Application": ['ML', 'Flask', 'Node'],
-    "Domain": ['Research', 'Healthcare', 'Finance'],
-    "General": ['Comp Organization', 'Passion', 'Java', 'Problem-Solving']
+    "Domain": ['Research', 'Healthcare', 'Finance', 'Networking'],
+    "General": ['Comp Organization', 'Passion', 'Java', 'Dev Ops']
 }
 
 HOBBIES = {
@@ -60,11 +60,33 @@ def career_pick():
 
 def initialize_default_tasks():
     default_tasks = DEFAULT_TASKS + pick_random_tasks(ART_TASKS, 3) + career_pick()
+    random.shuffle(MONEY_TASKS)
     default_tasks.append({"name": random.choice(MONEY_TASKS), "category": "money", "priority": "high"})
     default_tasks += [
         {"name": random.choice(HOBBIES["Personal"]), "category": "hobby", "priority": "medium"},
         {"name": random.choice(HOBBIES["Interest"]), "category": "hobby", "priority": "medium"}
     ]
+
+    random.shuffle(default_tasks)
+    
+    week_day = datetime.now().strftime("%A")
+    
+    if week_day in ['Monday,' 'Tuesday', 'Wednesday']:
+        default_tasks = default_tasks
+    elif week_day == 'Thursday':
+    	default_tasks = default_tasks[:8]
+    elif week_day == 'Friday':
+    	default_tasks = default_tasks[:7]
+    elif week_day == 'Saturday':
+        random.shuffle(DEFAULT_TASKS)
+        default_tasks = DEFAULT_TASKS[:-2] + pick_random_tasks(ART_TASKS, 1)
+        default_tasks += [
+        {"name": random.choice(HOBBIES["Personal"]), "category": "hobby", "priority": "medium"},
+        {"name": random.choice(HOBBIES["Interest"]), "category": "hobby", "priority": "medium"},
+	{"name": random.choice(HOBBIES["Interest"]), "category": "hobby", "priority": "medium"}
+    ]
+    elif week_day == 'Sunday':
+    	default_tasks = DEFAULT_TASKS
 
     with sqlite3.connect('tasks.db') as conn:
         cursor = conn.cursor()
@@ -90,7 +112,7 @@ def add_task():
     category = request.form['category']
     priority = request.form['priority']
     points = calculate_points(priority)
-    duration = random.choice([40, 60, 100] if category == 'project' else [20, 30, 40, 60])
+    duration = random.choice([20, 30, 40, 60])
     with sqlite3.connect('tasks.db') as conn:
         cursor = conn.cursor()
         cursor.execute('INSERT INTO tasks (name, category, duration, priority, points) VALUES (?, ?, ?, ?, ?)',
@@ -118,7 +140,7 @@ def view_tasks():
     today = datetime.now().strftime('%Y-%m-%d')
     with sqlite3.connect('tasks.db') as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT * FROM tasks ORDER BY priority DESC')
+        cursor.execute('SELECT * FROM tasks ORDER BY category ASC')
         remaining_tasks = cursor.fetchall()
         cursor.execute('SELECT task_name, category, duration, completed_at, points FROM completed_tasks WHERE DATE(completed_at) = ?', (today,))
         completed_tasks = cursor.fetchall()
