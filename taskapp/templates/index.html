@@ -10,36 +10,61 @@
     </header>
 
     <div class="content">
-        <section class="task-form">
-            <h2>Add a Task</h2>
-            <form action="{{ url_for('add_task') }}" method="post">
-                <input type="text" name="name" placeholder="Task name" required>
-                <select name="category" required>
-                    <option value="" disabled selected>Select category</option>
-                    <option value="hobby">Hobby</option>
-                    <option value="career">Career</option>
-                    <option value="relaxation">Relaxation</option>
-                    <option value="art">Art</option>
-                    <option value="project">Project</option>
-                </select>
-                <select name="priority" required>
-                    <option value="" disabled selected>Select priority</option>
-                    <option value="high">High</option>
-                    <option value="medium">Medium</option>
-                    <option value="low">Low</option>
-                </select>
-                <button type="submit" class="btn-primary">Add Task</button>
-            </form>
-        </section>
+        <div class="grid-container">
+            <section class="task-form">
+                <h2>Add a Task</h2>
+                <form action="{{ url_for('add_task') }}" method="post">
+                    <input type="text" name="name" placeholder="Task name" required>
+                    <select name="category" required>
+                        <option value="" disabled selected>Select category</option>
+                        <option value="hobby">Hobby</option>
+                        <option value="career">Career</option>
+                        <option value="relaxation">Relaxation</option>
+                        <option value="art">Art</option>
+                        <option value="project">Project</option>
+                        <option value="money">Money</option>
+                    </select>
+                    <select name="priority" required>
+                        <option value="" disabled selected>Select priority</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                    <button type="submit" class="btn-primary">Add Task</button>
+                </form>
+                <form action="{{ url_for('init_tasks') }}" method="get">
+                    <button type="submit" class="btn-primary">Initialize Tasks</button>
+                </form>
+            </section>
 
-        <section class="navigation">
-            <h2>Navigate</h2>
-            <a href="{{ url_for('pick_task') }}" class="nav-link btn-primary">Pick a Random Task</a>
-            <a href="{{ url_for('view_tasks') }}" class="nav-link btn-primary">View Tasks</a>
-            <a href="{{ url_for('progress') }}" class="nav-link btn-primary">View Progress</a>
-        </section>
+            <section class="navigation">
+                <h2>Navigate</h2>
+                <a href="{{ url_for('pick_task') }}" class="nav-link btn-primary">Pick a Random Task</a>
+                <a href="{{ url_for('view_tasks') }}" class="nav-link btn-primary">View Tasks</a>
+            </section>
+
+            <section class="current-task">
+                <h2>Current Task</h2>
+                {% if current_task %}
+                    <p><strong>Task:</strong> {{ current_task[2] }}</p>
+                    <p><strong>Duration:</strong> {{ current_task[4] }} minutes</p>
+                    <p><strong>Ends at:</strong> {{ current_task[5] }}</p>
+                    <p><strong>Priority:</strong> {{ current_task[6] }}</p>
+                {% else %}
+                    <p>No task is currently being worked on.</p>
+                {% endif %}
+            </section>
+
+            <section class="progress">
+                <h2>Progress</h2>
+                <p>{{ motivational_message }}</p>
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: {{ completion_percentage }}%;"></div>
+                </div>
+                <p>{{ completion_percentage }}% completed</p>
+            </section>
+        </div>
     </div>
-
 
     <style>
         body {
@@ -66,10 +91,10 @@
 
         .content {
             display: flex;
-            flex-direction: column;
+            justify-content: center;
             align-items: center;
             width: 100%;
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 20px;
             padding: 20px;
             background-color: rgba(255, 255, 255, 0.9);
@@ -77,14 +102,32 @@
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-        section {
-            margin: 30px 0;
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto;
+            grid-gap: 20px;
             width: 100%;
+        }
+
+        .task-form {
+            grid-column: 1 / span 1;
+        }
+
+        .navigation {
+            grid-column: 2 / span 1;
+        }
+
+        section {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
 
         input, select, button {
             width: 100%;
-	    max-width: 350px;
+            max-width: 350px;
             padding: 10px;
             margin-bottom: 10px;
             border-radius: 4px;
@@ -100,7 +143,7 @@
         }
 
         .btn-primary:hover {
-            background-color: turqoise;
+            background-color: turquoise;
         }
 
         .nav-link {
@@ -109,6 +152,19 @@
             text-decoration: none;
         }
 
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background-color: green;
+            transition: width 0.3s ease;
+        }
     </style>
 </body>
 </html>
