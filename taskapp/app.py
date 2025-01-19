@@ -9,7 +9,7 @@ app.secret_key = 'supersecretkey'
 # Task Definitions
 DEFAULT_TASKS = [
     {"name": "Nature Walk", "category": "Relaxation", "priority": "low"},
-    {"name": "Watch a Show", "category": "Relaxation", "priority": "low"},
+    {"name": "Watch Something", "category": "Relaxation", "priority": "low"},
     {"name": "Read a Book", "category": "Relaxation", "priority": "low"},
     {"name": "Explore a Complex Idea", "category": "Relaxation", "priority": "low"},
 ]
@@ -17,21 +17,21 @@ DEFAULT_TASKS = [
 ART_TASKS = {
     "Music": ['Design', 'Theory', 'Structure'],
     "Writing": ['Screenwriting', 'Poetry', 'Article', 'Descriptive'],
-    "Design": ['Graphic', 'Thinking', 'Math'],
+    "Design": ['Graphic', 'Thinking'],
     "Art": ['Meaning', 'Inspiration', 'Technique']
 }
 
 CAREER_TASKS = {
-    "Theory": ['HTTP', 'Statistics'],
-    "Language": ['Python', 'Javascript', 'HTML'],
-    "Application": ['ML', 'Flask', 'Node'],
-    "Domain": ['Research', 'Healthcare', 'Finance', 'Networking'],
-    "General": ['Comp Organization', 'Database Design', 'Java', 'Dev Ops']
+    "Theory": ['The Internet', 'Statistics'],
+    "Language": ['Python', 'Javascript', 'Java'],
+    "Application": ['ML', 'Frontend', 'Backend'],
+    "Domain": ['DevOps', 'Healthcare', 'Finance'],
+    "General": ['Comp Organization', 'Database']
 }
 
 HOBBIES = {
-    "Personal": ['Speech', 'Philosophy', 'Esoteric', 'Health', 'Cooking'],
-    "Interest": ['Cars', 'Film', 'Psychology', 'Home', 'Tech']
+    "Personal": ['Speech', 'Philosophy', 'Esoteric', 'Health',  'Home & Food'],
+    "Interest": ['Cars', 'Film', 'Psychology', 'Tech', 'Space']
 }
 
 MONEY_TASKS = ['Forex', 'Job search']
@@ -45,14 +45,27 @@ def pick_random_tasks(task_dict, num_tasks):
 
 def career_pick():
     theory_task = random.choice(CAREER_TASKS["Theory"])
-    language_task = "Python" if theory_task == "Statistics" else random.choice(["Javascript", "HTML"])
-    application_task = "ML" if theory_task == "Statistics" else random.choice(["Flask", "Node"])
+    general_task = random.choice(CAREER_TASKS["General"])
+    language_task = "Python" if theory_task == "Statistics" else random.choice(["Javascript", "Java"])
+    if theory_task == "Statistics":
+        application_task = "ML" 
+    elif theory_task == "The Internet":
+       application_task = random.choice(['Frontend', 'Backend'])
+       if application_task == 'Backend':
+            application_task = random.choice(["Node", "Flask"])
+       else:
+           application_task = application_task 
+    if general_task == 'Database':
+        general_task = random.choice(["MySQL", "MongoDB", "SQLite"])
+    else:
+        general_task = general_task
+
     return [
         {"name": f"Theory: {theory_task}", "category": "Career", "priority": "high"},
         {"name": f"Language: {language_task}", "category": "Career", "priority": "high"},
         {"name": f"Application: {application_task}", "category": "Career", "priority": "high"},
         {"name": f"Domain: {random.choice(CAREER_TASKS['Domain'])}", "category": "Career", "priority": "high"},
-        {"name": f"General: {random.choice(CAREER_TASKS['General'])}", "category": "Career", "priority": "high"}
+        {"name": f"General: {general_task}", "category": "Career", "priority": "high"}
     ]
 
 def calculate_points(priority):
