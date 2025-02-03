@@ -8,17 +8,17 @@ app.secret_key = 'supersecretkey'
 
 # Task Definitions
 DEFAULT_TASKS = [
-    {"name": "Nature Walk", "category": "Relaxation", "priority": "low"},
-    {"name": "Watch Something", "category": "Relaxation", "priority": "low"},
-    {"name": "Read a Book", "category": "Relaxation", "priority": "low"},
+    # {"name": "Nature Walk", "category": "Relaxation", "priority": "low"},
+    # {"name": "Watch Something", "category": "Relaxation", "priority": "low"},
+    # {"name": "Read a Book", "category": "Relaxation", "priority": "low"},
     {"name": "Explore a Complex Idea", "category": "Relaxation", "priority": "low"},
 ]
 
 ART_TASKS = {
     "Music": ['Design', 'Theory', 'Structure'],
-    "Writing": ['Screenwriting', 'Poetry', 'Article', 'Descriptive'],
+    "Writing": ['Poetry', 'Article', 'Descriptive'],
     "Design": ['Graphic', 'Thinking'],
-    "Art": ['Meaning', 'Inspiration', 'Technique']
+    "Art": ['Meaning', 'Inspiration']
 }
 
 CAREER_TASKS = {
@@ -60,35 +60,39 @@ def career_pick():
     else:
         general_task = general_task
 
-    return [
+    career_picks =  [
         {"name": f"Theory: {theory_task}", "category": "Career", "priority": "high"},
         {"name": f"Language: {language_task}", "category": "Career", "priority": "high"},
         {"name": f"Application: {application_task}", "category": "Career", "priority": "high"},
         {"name": f"Domain: {random.choice(CAREER_TASKS['Domain'])}", "category": "Career", "priority": "high"},
         {"name": f"General: {general_task}", "category": "Career", "priority": "high"}
     ]
+    
+    random.shuffle(career_picks)
+    return career_picks[:-2]
 
 def calculate_points(priority):
     return {"high": 10, "medium": 5, "low": 2}.get(priority, 2)
 
 def initialize_default_tasks():
-    tasks = DEFAULT_TASKS[:-1] + pick_random_tasks(ART_TASKS, 3) + career_pick() + [
+    tasks = DEFAULT_TASKS + pick_random_tasks(ART_TASKS, 2) + career_pick() + [
         {"name": random.choice(MONEY_TASKS), "category": "Money", "priority": "high"},
         {"name": random.choice(HOBBIES["Personal"]), "category": "Hobby", "priority": "medium"},
         {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"}
     ]
 
     week_day = datetime.now().strftime("%A")
+    
     if week_day == 'Thursday':
-        tasks = tasks[:8]
+        tasks = tasks[:6]
     elif week_day == 'Friday':
-        tasks = tasks[:7]
+        tasks = tasks[:5]
         if not any(task["name"] == "Nature Walk" for task in tasks):
             tasks.append({"name": "Nature Walk", "category": "Relaxation", "priority": "low"})
-        if len(tasks) > 7:
-            tasks = random.sample(tasks, 7)
+        if len(tasks) > 5:
+            tasks = random.sample(tasks, 5)
     elif week_day == 'Saturday':
-        tasks = DEFAULT_TASKS[:-2] + pick_random_tasks(ART_TASKS, 1) + [
+        tasks = DEFAULT_TASKS + pick_random_tasks(ART_TASKS, 1) + [
             {"name": random.choice(HOBBIES["Personal"]), "category": "Hobby", "priority": "medium"},
             {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"},
             {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"}
