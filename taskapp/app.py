@@ -10,8 +10,9 @@ app.secret_key = 'supersecretkey'
 DEFAULT_TASKS = [
     # {"name": "Nature Walk", "category": "Relaxation", "priority": "low"},
     # {"name": "Watch Something", "category": "Relaxation", "priority": "low"},
-    # {"name": "Read a Book", "category": "Relaxation", "priority": "low"},
+    {"name": "Read a Book", "category": "Relaxation", "priority": "low"},
     {"name": "Explore a Complex Idea", "category": "Relaxation", "priority": "low"},
+    {"name": "Physiology", "category": "Career", "priority": "high"}
 ]
 
 ART_TASKS = {
@@ -38,7 +39,7 @@ MONEY_TASKS = ['Forex', 'Job search']
 
 # Utility Functions
 def pick_random_tasks(task_dict, num_tasks):
-    tasks = [{"name": f"{category}: {random.choice(sub_tasks)}", "category": category.capitalize(), "priority": "medium"}
+    tasks = [{"name": f"{category}: {random.choice(sub_tasks)}", "category": "Art", "priority": "medium"}
              for category, sub_tasks in task_dict.items()]
     random.shuffle(tasks)
     return tasks[:num_tasks]
@@ -83,10 +84,12 @@ def initialize_default_tasks():
 
     week_day = datetime.now().strftime("%A")
     
-    if week_day == 'Thursday':
-        tasks = tasks[:6]
+    if week_day in ['Monday', 'Tuesday', 'Wednesday']:
+       tasks = random.sample(tasks, 9)
+    elif week_day == 'Thursday':
+        tasks = random.sample(tasks, 6)
     elif week_day == 'Friday':
-        tasks = tasks[:5]
+        tasks = random.sample(tasks, 5)
         if not any(task["name"] == "Nature Walk" for task in tasks):
             tasks.append({"name": "Nature Walk", "category": "Relaxation", "priority": "low"})
         if len(tasks) > 5:
@@ -97,6 +100,8 @@ def initialize_default_tasks():
             {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"},
             {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"}
         ]
+
+        tasks = random.sample(tasks, 5)	
     elif week_day == 'Sunday':
         tasks = DEFAULT_TASKS
 
