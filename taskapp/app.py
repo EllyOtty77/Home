@@ -192,5 +192,12 @@ def init_tasks():
     initialize_default_tasks()
     return redirect(url_for('view_tasks'))
 
+@app.route('/analytics')
+def view_analytics():
+    from app_functions import previous_analytics
+    
+    previous_tasks = previous_analytics()
+    return render_template('analytics.html', all_tasks=previous_tasks)
+
 if __name__ == '__main__':
     app.run(debug=True)

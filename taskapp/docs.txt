@@ -1,0 +1,8 @@
+Self- adjusting model
+Check bi-weekly task duration
+Duration thresholds
+
+400 minutes/day
+300 Thur
+200 Fri/Sat
+
