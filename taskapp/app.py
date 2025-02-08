@@ -194,10 +194,10 @@ def init_tasks():
 
 @app.route('/analytics')
 def view_analytics():
-    from app_functions import previous_analytics
+    from app_functions import show_performance
     
-    previous_tasks = previous_analytics()
-    return render_template('analytics.html', all_tasks=previous_tasks)
+    previous_performance = show_performance()
+    return render_template('analytics.html', all_tasks=previous_performance)
 
 if __name__ == '__main__':
     app.run(debug=True)

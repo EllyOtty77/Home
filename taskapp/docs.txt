@@ -6,3 +6,13 @@ Duration thresholds
 300 Thur
 200 Fri/Sat
 
+Save summary analytics
+End of day analytics
+
+Previous day, 
+Weekly
+Monthly
+
+Completed analytics for previous day
+Reset database
+

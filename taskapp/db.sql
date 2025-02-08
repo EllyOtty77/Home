@@ -33,3 +33,11 @@ CREATE TABLE completed_tasks (
     points INTEGER NOT NULL,
     FOREIGN KEY (task_id) REFERENCES tasks(id)
 );
+
+-- Create table for summary analytics
+CREATE TABLE analytics (
+    date_completed TEXT NOT NULL PRIMARY KEY,
+    day_of_week TEXT NOT NULL,
+    total_duration INTEGER NOT NULL,
+    tasks_done TEXT NOT NULL
+);

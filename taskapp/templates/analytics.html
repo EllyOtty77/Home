@@ -6,22 +6,22 @@
 </head>
 <body>
     <h2><font color="burlywood">Here are Yesterday's Analytics</font></h2>
-    <table border="1"  width="400" height="250" bgcolor="whitesmoke">
+    <table border="1"  width="800" height="300" bgcolor="whitesmoke">
         <tr>
-            <th>Category</th>
-            <th>Duration</th>
             <th>Day</th>
-            <th>Ratio</th> 
+            <th>Date</th>
+            <th>Total Time</th>
+            <th>Tasks Done</th> 
         </tr>
-        {% for row in all_tasks %}
-                        <tr>
-                            <td>{{row[0]}}</td>
-                            <td>{{row[1]}} minutes</td>
-                            <td>{{row[2]}}</td>
-                            <td>{{row[3]}}</td> 
-                        </tr>
+        
+        <tr>
+            <td>{{all_tasks[0]}}</td>
+            <td>{{all_tasks[1]}}</td>
+            <td>{{all_tasks[2]}}</td>
+            <td>{{all_tasks[3]}}</td> 
+        </tr>
                         
-                    {% endfor %} 
+                    
     </table>
     
 </body>
