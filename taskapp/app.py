@@ -194,10 +194,19 @@ def init_tasks():
 
 @app.route('/analytics')
 def view_analytics():
-    from app_functions import show_performance
+    from app_functions import show_weekly_performance
     
-    previous_performance = show_performance()
-    return render_template('analytics.html', all_tasks=previous_performance)
+    weekly_data = show_weekly_performance()
+    
+    if not weekly_data:
+        return render_template('analytics.html', message="No analytics available for this week.")
+
+    date_completed, day_of_week, total_duration, tasks_done = weekly_data
+
+    return render_template('analytics.html', 
+                           date_completed=date_completed,
+                           total_duration=total_duration,
+                           tasks_done=tasks_done)
 
 if __name__ == '__main__':
     app.run(debug=True)

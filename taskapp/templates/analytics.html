@@ -5,20 +5,18 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2><font color="burlywood">Here are Yesterday's Analytics</font></h2>
+    <h2><font color="burlywood">This week's Analytics</font></h2>
     <table border="1"  width="800" height="300" bgcolor="whitesmoke">
         <tr>
-            <th>Day</th>
-            <th>Date</th>
+            <th>Week</th>
             <th>Total Time</th>
             <th>Tasks Done</th> 
         </tr>
         
         <tr>
-            <td>{{all_tasks[0]}}</td>
-            <td>{{all_tasks[1]}}</td>
-            <td>{{all_tasks[2]}}</td>
-            <td>{{all_tasks[3]}}</td> 
+            <td>{{date_completed}}</td>
+            <td>{{total_duration}} min</td>
+            <td>{{tasks_done}}</td>
         </tr>
                         
                     

@@ -2,86 +2,79 @@ import pandas as pd
 import sqlite3
 import datetime as dt
 
-def previous_analytics():
-    
-    # Query the database
-    conn = sqlite3.connect('tasks.db')
+db_path = 'C:/Users/user/Desktop/Repositories/Home/taskapp/tasks.db'
+def weekly_analytics():
+    # Connect to the database
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
-
+    
+    # Query completed tasks
     query = '''
-    SELECT "task_name", "category", "duration", 
-    "completed_at", "points" FROM completed_tasks 
+    SELECT "task_name", "category", "duration", "completed_at", "points" FROM completed_tasks 
     ORDER BY completed_at DESC
     '''
     c.execute(query)
-
-    # Fetch tasks and save to dataframe
     tasks = c.fetchall()
     df = pd.DataFrame(tasks, columns=["Task", "Category", "Duration", "Completion Date", "Points"])
     
-    # Process dates to remove extra values
-    date_strs = df['Completion Date']
-    day_dates = []
-    for i in date_strs:
-        day_date = i.split(' ')[0]
-        day_dates.append(day_date)    
-    df['Completion Date'] = day_dates
-
-    # Group previous day categories for analysis
-    today = dt.datetime.today()
-    yesterday = (today - dt.timedelta(days=1))
-    day_ofweek = yesterday.strftime("%A")
-    yesterday = yesterday.strftime("%Y-%m-%d")
-
-    # Create a filter dataframe
-    new_df = df[(df['Completion Date'] == yesterday)].copy()
-    cat_grp = new_df.groupby('Category')['Duration'].sum()
+    # Convert 'Completion Date' to datetime and extract date
+    df['Completion Date'] = pd.to_datetime(df['Completion Date']).dt.date
+    
+    # Define date range (Monday to Saturday)
+    today = dt.date.today()
+    last_monday = today - dt.timedelta(days=today.weekday())
+    last_saturday = last_monday + dt.timedelta(days=5)
+    
+    # Filter tasks within Monday-Saturday range
+    week_df = df[(df['Completion Date'] >= last_monday) & (df['Completion Date'] <= last_saturday)]
+    
+    if week_df.empty:
+        print("No completed tasks found for the current week.")
+        return
+    
+    # Group by category and calculate time spent per category
+    cat_grp = week_df.groupby('Category')['Duration'].sum()
     cat_grp.sort_values(ascending=False, inplace=True)
-
-    # Create new dataframe and calculate ratios
-    yesterdata = {
+    
+    # Create dataframe for weekly summary
+    week_data = {
         'Category': cat_grp.index,
         'Time Spent': cat_grp.values,
-        'Completed Date': yesterday
+        'Completed Date': f'{last_monday} to {last_saturday}'
     }
-
-    yesdf = pd.DataFrame(yesterdata)
+    
+    week_df_summary = pd.DataFrame(week_data)
     total_duration = int(cat_grp.sum())
-    yesdf = pd.DataFrame(yesterdata)
-    yesdf['Ratio'] = round(yesdf['Time Spent']/total_duration, 2)
+    week_df_summary['Ratio'] = round(week_df_summary['Time Spent'] / total_duration, 2)
     
-    df_values = []
-    for row in yesdf.values:
-        df_values.append(row)
+    # Prepare data for insertion
+    df_values = [f'{done[0]}: {done[-1]}' for done in week_df_summary.values]
+    done_tasks = ', '.join(df_values)
     
-    done_tasks = [f'{done[0]}: {done[-1]}' for done in df_values]
-    done_tasks = ', '.join(done_tasks)
-
-    c.execute('INSERT INTO analytics (date_completed, day_of_week, total_duration, tasks_done) VALUES (?, ?, ?, ?)',
-            (yesterday, day_ofweek, total_duration, done_tasks))
+    # Insert weekly analytics into the database
+    c.execute('''
+        INSERT INTO analytics (date_completed, day_of_week, total_duration, tasks_done) 
+        VALUES (?, ?, ?, ?)''',
+        (f'{last_monday} to {last_saturday}', 'Weekly Summary', total_duration, done_tasks))
     
     conn.commit()
     conn.close()
 
-
-def show_performance ():
-    # Query the database
-    conn = sqlite3.connect('tasks.db')
+def show_weekly_performance():
+    # Connect to the database
+    conn = sqlite3.connect(db_path)
     c = conn.cursor()
-
+    
+    # Retrieve weekly summary
     query = '''
-    SELECT "day_of_week", "date_completed", "total_duration", "tasks_done"
-    FROM analytics 
+    SELECT date_completed, day_of_week, total_duration, tasks_done FROM analytics 
+    WHERE day_of_week = "Weekly Summary" 
+    ORDER BY date_completed DESC LIMIT 1
     '''
     c.execute(query)
-    
-    dones = c.fetchall()
-    yester_done = dones[0]
+    weekly_done = c.fetchone()
     
     conn.close()
     
-    return yester_done
-        
-
-# if __name__ == '_main_':
-    # previous_analytics()
+    return weekly_done
+print(show_weekly_performance())
