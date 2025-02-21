@@ -41,7 +41,6 @@
                 <h2>Navigate</h2>
                 <a href="{{ url_for('pick_task') }}" class="nav-link btn-primary">Pick a Random Task</a>
                 <a href="{{ url_for('view_tasks') }}" class="nav-link btn-primary">View Tasks</a>
-                <a href="{{ url_for('view_analytics')}}" class="nav-link btn-primary">View Analytics</a>
             </section>
 
             <section class="current-task">
@@ -50,7 +49,6 @@
                     <p><strong>Task:</strong> {{ current_task[2] }}</p>
                     <p><strong>Duration:</strong> {{ current_task[4] }} minutes</p>
                     <p><strong>Ends at:</strong> {{ current_task[5] }}</p>
-                    <p><strong>Priority:</strong> {{ current_task[6] }}</p>
                 {% else %}
                     <p>No task is currently being worked on.</p>
                 {% endif %}

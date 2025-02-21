@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for
 import sqlite3
 import random
 from datetime import datetime, timedelta
@@ -6,134 +6,98 @@ from datetime import datetime, timedelta
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'
 
-# Task Definitions
-DEFAULT_TASKS = [
-    # {"name": "Nature Walk", "category": "Relaxation", "priority": "low"},
-    # {"name": "Watch Something", "category": "Relaxation", "priority": "low"},
-    {"name": "Read a Book", "category": "Relaxation", "priority": "low"},
-    {"name": "Explore a Complex Idea", "category": "Relaxation", "priority": "low"},
-    {"name": "Physiology", "category": "Career", "priority": "high"}
-]
+# Task selection
+def select_tasks(task_list, label, sample_size=None):
+    selected = random.sample(task_list, sample_size) if sample_size else [random.choice(task_list)]
+    tasks = []
+    for item in selected:
+        for key, values in item.items():
+            tasks.append(f'{key} - {random.choice(values)}:{label}')
+    return tasks
 
-ART_TASKS = {
-    "Music": ['Design', 'Theory', 'Structure'],
-    "Writing": ['Poetry', 'Article', 'Descriptive'],
-    "Design": ['Graphic', 'Thinking'],
-    "Art": ['Meaning', 'Inspiration']
-}
-
-CAREER_TASKS = {
-    "Theory": ['The Internet', 'Statistics'],
-    "Language": ['Python', 'Javascript', 'Java'],
-    "Application": ['ML', 'Frontend', 'Backend'],
-    "Domain": ['DevOps', 'Healthcare', 'Finance'],
-    "General": ['Comp Organization', 'Database']
-}
-
-HOBBIES = {
-    "Personal": ['Speech', 'Philosophy', 'Esoteric', 'Health',  'Home & Food'],
-    "Interest": ['Cars', 'Film', 'Psychology', 'Tech', 'Space']
-}
-
-MONEY_TASKS = ['Forex', 'Job search']
-
-# Utility Functions
-def pick_random_tasks(task_dict, num_tasks):
-    tasks = [{"name": f"{category}: {random.choice(sub_tasks)}", "category": "Art", "priority": "medium"}
-             for category, sub_tasks in task_dict.items()]
-    random.shuffle(tasks)
-    return tasks[:num_tasks]
-
-def career_pick():
-    theory_task = random.choice(CAREER_TASKS["Theory"])
-    general_task = random.choice(CAREER_TASKS["General"])
-    language_task = "Python" if theory_task == "Statistics" else random.choice(["Javascript", "Java"])
-    if theory_task == "Statistics":
-        application_task = "ML" 
-    elif theory_task == "The Internet":
-       application_task = random.choice(['Frontend', 'Backend'])
-       if application_task == 'Backend':
-            application_task = random.choice(["Node", "Flask"])
-       else:
-           application_task = application_task 
-    if general_task == 'Database':
-        general_task = random.choice(["MySQL", "MongoDB", "SQLite"])
-    else:
-        general_task = general_task
-
-    career_picks =  [
-        {"name": f"Theory: {theory_task}", "category": "Career", "priority": "high"},
-        {"name": f"Language: {language_task}", "category": "Career", "priority": "high"},
-        {"name": f"Application: {application_task}", "category": "Career", "priority": "high"},
-        {"name": f"Domain: {random.choice(CAREER_TASKS['Domain'])}", "category": "Career", "priority": "high"},
-        {"name": f"General: {general_task}", "category": "Career", "priority": "high"}
+# Career tasks
+career_tasks = {
+    "Developer": [
+        {"Python": ['Python DSA', 'Python Module', 'Python Refresher']}, 
+        {"Javascript": ['Syntax', 'Project', 'Node']},
+        {"Database": ['Design', 'SQLite', 'MySQL', 'MongoDB']},
+        {"Web": ['Frontend', 'Flask', 'APIs']},
+        {"Java": ['Syntax', 'Project']},
+        {"Data Science": ['Statistics', 'Machine Learning']},
+        {"Dev Ops": ['Git', 'Contribute to Open Source']}
+    ],
+    "Medical": [
+        {"Physiology": ['Medical Physiology']},
+        {"Chemistry": ['Biochemistry', 'Pharmacology']}
+    ],
+    "Money": [
+        {"Trading": ['MT5', 'Psychology']},
+        {"Business": ['Investing', 'Entrepreneurship']}
     ]
-    
-    random.shuffle(career_picks)
-    return career_picks[:-2]
+}
 
-def calculate_points(priority):
-    return {"high": 10, "medium": 5, "low": 2}.get(priority, 2)
+career_stuff = []
+career_stuff += select_tasks(career_tasks['Developer'], "Career", sample_size=4)
+career_stuff += select_tasks(career_tasks['Medical'], "Career")  # one random item from Medical
+career_stuff += select_tasks(career_tasks['Money'], "Career", sample_size=2)
+
+# Art tasks
+art_tasks = {
+    "Music": ['Theory', 'Sound Design', 'DJ'], 
+    "Writing": ['Poetry', 'Descriptive Writing'],
+    "Design": ['Design Thinking', 'Graphic Design']
+}
+art_stuff = [f'{key} - {random.choice(values)}:Art' for key, values in art_tasks.items()]
+random.shuffle(art_stuff)
+art_stuff = random.sample(art_stuff, 2)
+
+# Intellect tasks
+intellect_tasks = {
+    "Inspiration": ['Science', 'Tech', 'Music', 'Art', 'Film', 'Home'],
+    "Esoteric": ['Meditate', 'Read a Spiritual Book'],
+    "Philosophy": ['General', 'Read an Essay', 'Kant']
+}
+intellect_stuff = [f'{key} - {random.choice(values)}:Intellect' for key, values in intellect_tasks.items()]
+random.shuffle(intellect_stuff)
+intellect_stuff = random.sample(intellect_stuff, 2)
+
+all_tasks = career_stuff + art_stuff + intellect_stuff
+
+# Daily task list
+def generate_task_list(day, tasks):
+    sizes = {'Monday': 10, 'Tuesday': 10, 'Wednesday': 10, 'Thursday': 8, 'Friday': 7, 'Saturday': 5}
+    sample_size = sizes.get(day, 0)
+    return random.sample(tasks, min(sample_size, len(tasks)))     
+
 
 def initialize_default_tasks():
-    tasks = DEFAULT_TASKS + pick_random_tasks(ART_TASKS, 2) + career_pick() + [
-        {"name": random.choice(MONEY_TASKS), "category": "Money", "priority": "high"},
-        {"name": random.choice(HOBBIES["Personal"]), "category": "Hobby", "priority": "medium"},
-        {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"}
-    ]
-
-    week_day = datetime.now().strftime("%A")
-    
-    if week_day in ['Monday', 'Tuesday', 'Wednesday']:
-       tasks = random.sample(tasks, 9)
-    elif week_day == 'Thursday':
-        tasks = random.sample(tasks, 6)
-    elif week_day == 'Friday':
-        tasks = random.sample(tasks, 5)
-        if not any(task["name"] == "Nature Walk" for task in tasks):
-            tasks.append({"name": "Nature Walk", "category": "Relaxation", "priority": "low"})
-        if len(tasks) > 5:
-            tasks = random.sample(tasks, 5)
-    elif week_day == 'Saturday':
-        tasks = DEFAULT_TASKS + pick_random_tasks(ART_TASKS, 1) + [
-            {"name": random.choice(HOBBIES["Personal"]), "category": "Hobby", "priority": "medium"},
-            {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"},
-            {"name": random.choice(HOBBIES["Interest"]), "category": "Hobby", "priority": "medium"}
-        ]
-
-        tasks = random.sample(tasks, 5)	
-    elif week_day == 'Sunday':
-        tasks = DEFAULT_TASKS
-
+    current_day = datetime.today().strftime("%A")
+    daily_tasks = generate_task_list(current_day, all_tasks)
     with sqlite3.connect('tasks.db') as conn:
         cursor = conn.cursor()
         cursor.execute('DELETE FROM tasks')
-        for task in tasks:
-            points = calculate_points(task['priority'])
-            cursor.execute('INSERT INTO tasks (name, category, duration, priority, points) VALUES (?, ?, ?, ?, ?)',
-                           (task['name'], task['category'], 0, task['priority'], points))
+        for t in daily_tasks:
+            task = t.split(':')[0]
+            task_category = t.split(':')[1].strip()
+            cursor.execute('INSERT INTO tasks (name, duration, category) VALUES (?, ?, ?)', (task, 0, task_category))
         conn.commit()
 
-# Flask Routes
 @app.route('/')
 def index():
     with sqlite3.connect('tasks.db') as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT id, name, category, priority FROM tasks ORDER BY category ASC')
+        cursor.execute('SELECT id, name FROM tasks')
         remaining_tasks = cursor.fetchall()
         cursor.execute('SELECT COUNT(*) FROM tasks')
         tasks_remaining = cursor.fetchone()[0]
         today = datetime.now().strftime('%Y-%m-%d')
         cursor.execute('SELECT COUNT(*) FROM completed_tasks WHERE DATE(completed_at) = ?', (today,))
         tasks_completed = cursor.fetchone()[0]
-
-    if tasks_remaining + tasks_completed > 0:
-        completion_percentage = int((tasks_completed / (tasks_remaining + tasks_completed)) * 100)
-    else:
-        completion_percentage = 0
-
+    
+    completion_percentage = (tasks_completed / (tasks_remaining + tasks_completed) * 100) if tasks_remaining + tasks_completed > 0 else 0
+    completion_percentage = int(round(completion_percentage, 0))
     motivational_message = f"You've completed {completion_percentage}% of your tasks today! Keep going!"
-
+     
     # Fetch current task if any
     current_task = None
     cursor.execute('SELECT * FROM completed_tasks ORDER BY id DESC LIMIT 1')
@@ -141,17 +105,13 @@ def index():
 
     return render_template('index.html', current_task=current_task, tasks_remaining=tasks_remaining, motivational_message=motivational_message, completion_percentage=completion_percentage)
 
+
 @app.route('/add_task', methods=['POST'])
 def add_task():
     name = request.form['name']
-    category = request.form['category']
-    priority = request.form['priority']
-    points = calculate_points(priority)
-    duration = 0
     with sqlite3.connect('tasks.db') as conn:
         cursor = conn.cursor()
-        cursor.execute('INSERT INTO tasks (name, category, duration, priority, points) VALUES (?, ?, ?, ?, ?)',
-                       (name, category, duration, priority, points))
+        cursor.execute('INSERT INTO tasks (name, duration) VALUES (?, ?)', (name, 0))
         conn.commit()
     return redirect(url_for('index'))
 
@@ -165,48 +125,32 @@ def pick_task():
             task = random.choice(tasks)
             duration = random.choice([15, 25, 30, 40, 50])
             completed_at = datetime.now() + timedelta(minutes=duration)
-            cursor.execute('INSERT INTO completed_tasks (task_id, task_name, category, duration, completed_at, points) VALUES (?, ?, ?, ?, ?, ?)',
-                           (task[0], task[1], task[2], duration, completed_at, task[5]))
+            completed_at = completed_at.strftime("%Y-%m-%d %H:%M")
+            cursor.execute('INSERT INTO completed_tasks (task_id, task_name, category, duration, completed_at) VALUES (?, ?, ?, ?, ?)',
+                           (task[0], task[1], task[2], duration, completed_at))
             cursor.execute('DELETE FROM tasks WHERE id = ?', (task[0],))
             conn.commit()
-
-        # Fetch the current task
-        cursor.execute('SELECT * FROM completed_tasks ORDER BY id DESC LIMIT 1')
-        current_task = cursor.fetchone()
     
+    cursor.execute('SELECT * FROM completed_tasks ORDER BY id DESC LIMIT 1')
+    current_task = cursor.fetchone()
     return render_template('task.html', task=task, duration=duration, current_task=current_task)
+
 
 @app.route('/view_tasks')
 def view_tasks():
     today = datetime.now().strftime('%Y-%m-%d')
     with sqlite3.connect('tasks.db') as conn:
         cursor = conn.cursor()
-        cursor.execute('SELECT id, name, category, priority, points FROM tasks ORDER BY category ASC')
+        cursor.execute('SELECT id, name, category FROM tasks')
         remaining_tasks = cursor.fetchall()
-    cursor.execute('SELECT task_name, category, duration, completed_at, points FROM completed_tasks WHERE DATE(completed_at) = ?', (today,)) 
-    completed_tasks = cursor.fetchall() 
-    return render_template('view_tasks.html', remaining_tasks=remaining_tasks,   completed_tasks=completed_tasks)
+        cursor.execute('SELECT task_name, category, duration, completed_at FROM completed_tasks WHERE DATE(completed_at) = ?', (today,)) 
+        completed_tasks = cursor.fetchall() 
+    return render_template('view_tasks.html', remaining_tasks=remaining_tasks, completed_tasks=completed_tasks)
 
 @app.route('/init_tasks')
 def init_tasks():
     initialize_default_tasks()
     return redirect(url_for('view_tasks'))
-
-@app.route('/analytics')
-def view_analytics():
-    from app_functions import show_weekly_performance
-    
-    weekly_data = show_weekly_performance()
-    
-    if not weekly_data:
-        return render_template('analytics.html', message="No analytics available for this week.")
-
-    date_completed, day_of_week, total_duration, tasks_done = weekly_data
-
-    return render_template('analytics.html', 
-                           date_completed=date_completed,
-                           total_duration=total_duration,
-                           tasks_done=tasks_done)
 
 if __name__ == '__main__':
     app.run(debug=True)
