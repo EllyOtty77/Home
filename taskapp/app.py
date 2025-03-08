@@ -18,28 +18,21 @@ def select_tasks(task_list, label, sample_size=None):
 # Career tasks
 career_tasks = {
     "Developer": [
-        {"Python": ['Python DSA', 'Python Module', 'Python Refresher']}, 
-        {"Javascript": ['Syntax', 'Project', 'Node']},
-        {"Database": ['Design', 'SQLite', 'MySQL', 'MongoDB']},
-        {"Web": ['Frontend', 'Flask', 'APIs']},
+        {"Database": ['Design', 'MySQL', 'MongoDB']},
+        {"Web": ['Javascript', 'Flask', 'The Internet']},
         {"Java": ['Syntax', 'Project']},
-        {"Data Science": ['Statistics', 'Machine Learning']},
-        {"Dev Ops": ['Git', 'Contribute to Open Source']}
+        {"Data Science": ['Statistics', 'Machine Learning', 'Data Cleaning']},
+        {"Computing": ['Git', 'Algorithms', 'Crash Course']}
     ],
     "Medical": [
         {"Physiology": ['Medical Physiology']},
         {"Chemistry": ['Biochemistry', 'Pharmacology']}
     ],
     "Money": [
-        {"Trading": ['MT5', 'Psychology']},
-        {"Business": ['Investing', 'Entrepreneurship']}
+        {"Trading": ['MT5', 'Knowledge']},
+        {"Business": ['Economics', 'Entrepreneurship']}
     ]
 }
-
-career_stuff = []
-career_stuff += select_tasks(career_tasks['Developer'], "Career", sample_size=4)
-career_stuff += select_tasks(career_tasks['Medical'], "Career")  # one random item from Medical
-career_stuff += select_tasks(career_tasks['Money'], "Career", sample_size=2)
 
 # Art tasks
 art_tasks = {
@@ -47,30 +40,26 @@ art_tasks = {
     "Writing": ['Poetry', 'Descriptive Writing'],
     "Design": ['Design Thinking', 'Graphic Design']
 }
-art_stuff = [f'{key} - {random.choice(values)}:Art' for key, values in art_tasks.items()]
-random.shuffle(art_stuff)
-art_stuff = random.sample(art_stuff, 2)
-
-# Intellect tasks
-intellect_tasks = {
-    "Inspiration": ['Science', 'Tech', 'Music', 'Art', 'Film', 'Home'],
-    "Esoteric": ['Meditate', 'Read a Spiritual Book'],
-    "Philosophy": ['General', 'Read an Essay', 'Kant']
-}
-intellect_stuff = [f'{key} - {random.choice(values)}:Intellect' for key, values in intellect_tasks.items()]
-random.shuffle(intellect_stuff)
-intellect_stuff = random.sample(intellect_stuff, 2)
-
-all_tasks = career_stuff + art_stuff + intellect_stuff
 
 # Daily task list
 def generate_task_list(day, tasks):
-    sizes = {'Monday': 10, 'Tuesday': 10, 'Wednesday': 10, 'Thursday': 8, 'Friday': 7, 'Saturday': 5}
+    sizes = {'Monday': 8, 'Tuesday': 8, 'Wednesday': 8, 'Thursday': 7, 'Friday': 6, 'Saturday': 5}
     sample_size = sizes.get(day, 0)
     return random.sample(tasks, min(sample_size, len(tasks)))     
 
 
 def initialize_default_tasks():
+    career_stuff = []
+    career_stuff += select_tasks(career_tasks['Developer'], "Career", sample_size=3)
+    career_stuff += select_tasks(career_tasks['Medical'], "Career")  # one random item from Medical
+    career_stuff += select_tasks(career_tasks['Money'], "Career", sample_size=2)
+
+    art_stuff = [f'{key} - {random.choice(values)}:Art' for key, values in art_tasks.items()]
+    random.shuffle(art_stuff)
+    art_stuff = random.sample(art_stuff, 2)
+
+    all_tasks = career_stuff + art_stuff
+
     current_day = datetime.today().strftime("%A")
     daily_tasks = generate_task_list(current_day, all_tasks)
     with sqlite3.connect('tasks.db') as conn:
