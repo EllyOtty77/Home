@@ -21,7 +21,7 @@ career_tasks = {
         {"Database": ['Design', 'MySQL', 'MongoDB']},
         {"Web": ['Javascript', 'Flask', 'The Internet']},
         {"Java": ['Syntax', 'Project']},
-        {"Data Science": ['Statistics', 'Machine Learning', 'Data Cleaning']},
+        {"Data Science": ['Statistics', 'Machine Learning', 'Web Scraping']},
         {"Computing": ['Git', 'Algorithms', 'Crash Course']}
     ],
     "Medical": [
