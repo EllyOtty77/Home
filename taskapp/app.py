@@ -18,11 +18,10 @@ def select_tasks(task_list, label, sample_size=None):
 # Career tasks
 career_tasks = {
     "Developer": [
-        {"Database": ['Design', 'MySQL', 'MongoDB']},
-        {"Web": ['Javascript', 'Flask', 'The Internet']},
-        {"Java": ['Syntax', 'Project']},
-        {"Data Science": ['Statistics', 'Machine Learning', 'Excel']},
-        {"Computing": ['Git', 'Algorithms', 'Crash Course']}
+        {"Web": ['React', 'Flask', 'The Internet']},
+        {"Data": ['Data Analysis', 'SQL', 'DB Design']},
+        {"Automation": ['Java', 'Python', 'Terminal']},
+        {"Computing": ['Git', 'Algorithms', 'Software Engineering']}
     ],
     "Medical": [
         {"Physiology": ['Medical Physiology']},
@@ -50,7 +49,7 @@ def generate_task_list(day, tasks):
 
 def initialize_default_tasks():
     career_stuff = []
-    career_stuff += select_tasks(career_tasks['Developer'], "Career", sample_size=3)
+    career_stuff += select_tasks(career_tasks['Developer'], "Career", sample_size=4)
     career_stuff += select_tasks(career_tasks['Medical'], "Career")  # one random item from Medical
     career_stuff += select_tasks(career_tasks['Money'], "Career", sample_size=2)
 
